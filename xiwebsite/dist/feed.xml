@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>见字如面</title>
+    <link>https://example.com</link>
+    <description>抽离自我，冷眼旁观</description>
+    <language>zh-CN</language>
+    <lastBuildDate>Fri, 18 Sep 2026 15:21:47 GMT</lastBuildDate>
+    <atom:link href="https://example.com/feed.xml" rel="self" type="application/rss+xml"/>
+    <item>
+      <title>开始写博客</title>
+      <link>https://example.com/posts/hello-world.html</link>
+      <guid isPermaLink="true">https://example.com/posts/hello-world.html</guid>
+      <pubDate>Tue, 15 Sep 2026 13:30:00 GMT</pubDate>
+      <description>从今天起，把想说的话写下来。顺便介绍一下这个模板怎么用。</description>
+    </item>
+    <item>
+      <title>如何修改博客风格</title>
+      <link>https://example.com/posts/theme-customization.html</link>
+      <guid isPermaLink="true">https://example.com/posts/theme-customization.html</guid>
+      <pubDate>Wed, 02 Sep 2026 02:15:00 GMT</pubDate>
+      <description>换配色、换字体、换宽度、换列表样式 —— 全部集中在 theme.config.mjs 一个文件里。</description>
+    </item>
+    <item>
+      <title>把博客托管上线</title>
+      <link>https://example.com/posts/deploy-guide.html</link>
+      <guid isPermaLink="true">https://example.com/posts/deploy-guide.html</guid>
+      <pubDate>Fri, 14 Aug 2026 08:40:00 GMT</pubDate>
+      <description>GitHub Pages、Vercel、Netlify、Cloudflare Pages，以及最省事的&quot;拖拽上传&quot;。</description>
+    </item>
+    <item>
+      <title>Markdown 写作速查</title>
+      <link>https://example.com/posts/markdown-cheatsheet.html</link>
+      <guid isPermaLink="true">https://example.com/posts/markdown-cheatsheet.html</guid>
+      <pubDate>Tue, 21 Jul 2026 01:05:00 GMT</pubDate>
+      <description>这个模板支持的 Markdown 语法一览，附带 front matter 字段说明。</description>
+    </item>
+    <item>
+      <title>慢下来这件事</title>
+      <link>https://example.com/posts/slow-down.html</link>
+      <guid isPermaLink="true">https://example.com/posts/slow-down.html</guid>
+      <pubDate>Mon, 08 Jun 2026 14:10:00 GMT</pubDate>
+      <description>效率工具越多，反而越难专注。记录一次刻意的&quot;断网&quot;实验。</description>
+    </item>
+    <item>
+      <title>读书笔记：关于&quot;知道&quot;和&quot;理解&quot;</title>
+      <link>https://example.com/posts/reading-notes.html</link>
+      <guid isPermaLink="true">https://example.com/posts/reading-notes.html</guid>
+      <pubDate>Thu, 30 Apr 2026 12:00:00 GMT</pubDate>
+      <description>读完之后记不住，是记性的问题，还是方法的问题？</description>
+    </item>
+  </channel>
+</rss>

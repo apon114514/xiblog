@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+  <rect width="64" height="64" rx="12" fill="#ffffff"/>
+  <rect x="0.75" y="0.75" width="62.5" height="62.5" rx="11.5" fill="none" stroke="#dddddd" stroke-width="1.5"/>
+  <text x="32" y="45" font-family="Georgia, 'Songti SC', 'Times New Roman', serif" font-size="40"
+        font-weight="bold" fill="#c83c23" text-anchor="middle">见</text>
+</svg>

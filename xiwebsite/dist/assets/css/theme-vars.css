@@ -1,0 +1,27 @@
+/* 由 theme.config.mjs 自动生成，请勿手改；改配置后重新构建即可。 */
+:root {
+  --font-sans: "Helvetica Neue", Arial, "Hiragino Sans GB", "STHeiti", "Microsoft YaHei", "WenQuanYi Micro Hei", SimSun, sans-serif;
+  --font-serif: "ff-tisa-web-pro", Cambria, "Times New Roman", Georgia, Times, "Songti SC", "SimSun", serif;
+  --font-mono: Menlo, Monaco, Consolas, "Lucida Console", "Courier New", monospace;
+  --font-size-base: 14px;
+  --font-size-content: 15px;
+  --line-height-content: 1.75;
+  --letter-spacing: 0.4px;
+  --font-size-logo: 50px;
+  --font-size-title: 25px;
+  --font-size-widget: 16px;
+  --container-width: 1150px;
+  --container-padding: 60px;
+  --main-width: 800px;
+  --sidebar-width: 245px;
+  --sidebar-gap: 35px;
+  --radius: 2px;
+  --post-max-width: 760px;
+  --post-align: left;
+}
+
+/* ---------- customCss（theme.config.mjs） ---------- */
+/* 例如：换一套中文字体
+@import url('https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;700&display=swap');
+:root { --font-serif: 'Noto Serif SC', var(--font-serif); }
+*/

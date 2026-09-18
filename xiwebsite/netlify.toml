@@ -1,0 +1,26 @@
+# Netlify 配置 —— 导入仓库后无需手动填任何东西
+
+[build]
+  command = "node build.mjs"
+  publish = "dist"
+
+[build.environment]
+  NODE_VERSION = "20"
+
+# 静态资源长期缓存（文件名固定，改样式后记得清 CDN 缓存或改文件名）
+[[headers]]
+  for = "/assets/*"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Content-Type-Options = "nosniff"
+    Referrer-Policy = "strict-origin-when-cross-origin"
+
+# 找不到的页面走自定义 404
+[[redirects]]
+  from = "/*"
+  to = "/404.html"
+  status = 404

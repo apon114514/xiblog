@@ -1,0 +1,20 @@
+{
+  "name": "maupassant-static-blog",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "零依赖静态博客模板 —— 仿 hiwannz.com（Maupassant 主题风格），可直接托管，风格可配置",
+  "keywords": ["blog", "static-site", "markdown", "maupassant", "template"],
+  "license": "MIT",
+  "engines": {
+    "node": ">=18"
+  },
+  "scripts": {
+    "build": "node build.mjs",
+    "build:drafts": "node build.mjs --drafts",
+    "dev": "node build.mjs --serve",
+    "preview": "node build.mjs --serve",
+    "new": "node scripts/new-post.mjs",
+    "clean": "node scripts/clean.mjs"
+  }
+}

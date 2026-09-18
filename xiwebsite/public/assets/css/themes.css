@@ -1,0 +1,196 @@
+/* ==========================================================================
+   themes.css —— 内置配色方案
+   --------------------------------------------------------------------------
+   在 theme.config.mjs 里改 preset 即可整站换色：
+       preset: 'maupassant' | 'ink' | 'sepia' | 'ocean' | 'forest' | 'plum' | 'dark'
+   这里的每个方案都只覆盖 CSS 变量，不碰版式
+   （所以版式永远由 main.css + theme.config.mjs 决定）。
+   ========================================================================== */
+
+/* ---------- 原站同款：白底墨字 + 朱红点缀（默认） ---------- */
+[data-theme="maupassant"] {
+  --bg: #ffffff;
+  --bg-soft: #f8f8f8;
+  --bg-code: #f8f8f8;
+  --text: #444444;
+  --text-strong: #555555;
+  --text-soft: #999999;
+  --text-faint: #bbbbbb;
+  --link: #6e7173;
+  --link-hover: #444444;
+  --accent: #c83c23;
+  --accent-hover: #d26911;
+  --border: #dddddd;
+  --border-strong: #cccccc;
+  --selection-bg: #f6f6f3;
+  --selection-text: #555555;
+}
+
+/* ---------- 墨白：几乎无色，极简 ---------- */
+[data-theme="ink"] {
+  --bg: #ffffff;
+  --bg-soft: #f5f5f5;
+  --bg-code: #f5f5f5;
+  --text: #2b2b2b;
+  --text-strong: #111111;
+  --text-soft: #8c8c8c;
+  --text-faint: #b5b5b5;
+  --link: #444444;
+  --link-hover: #000000;
+  --accent: #111111;
+  --accent-hover: #555555;
+  --border: #e6e6e6;
+  --border-strong: #d0d0d0;
+  --selection-bg: #ededed;
+  --selection-text: #111111;
+}
+
+/* ---------- 米黄：护眼长文 ---------- */
+[data-theme="sepia"] {
+  --bg: #faf6ef;
+  --bg-soft: #f2ebdd;
+  --bg-code: #f2ebdd;
+  --text: #4a4238;
+  --text-strong: #3a3229;
+  --text-soft: #998c78;
+  --text-faint: #bdb0a0;
+  --link: #7a6a55;
+  --link-hover: #3a3229;
+  --accent: #a9603c;
+  --accent-hover: #c47a4e;
+  --border: #e3d9c8;
+  --border-strong: #d3c6b0;
+  --selection-bg: #efe6d5;
+  --selection-text: #4a4238;
+}
+
+/* ---------- 青蓝 ---------- */
+[data-theme="ocean"] {
+  --bg: #fbfcfd;
+  --bg-soft: #f0f5f9;
+  --bg-code: #f0f5f9;
+  --text: #33404a;
+  --text-strong: #1f2b34;
+  --text-soft: #7d8f9c;
+  --text-faint: #a8b8c4;
+  --link: #4a6b80;
+  --link-hover: #1f2b34;
+  --accent: #1f6feb;
+  --accent-hover: #0b6e99;
+  --border: #dce5ec;
+  --border-strong: #c4d2dd;
+  --selection-bg: #e6eff8;
+  --selection-text: #1f2b34;
+}
+
+/* ---------- 松绿 ---------- */
+[data-theme="forest"] {
+  --bg: #fbfcfa;
+  --bg-soft: #f0f5f1;
+  --bg-code: #f0f5f1;
+  --text: #37423a;
+  --text-strong: #232d26;
+  --text-soft: #7e8d83;
+  --text-faint: #aab8ae;
+  --link: #4c6b57;
+  --link-hover: #232d26;
+  --accent: #2f7a4f;
+  --accent-hover: #3f9a65;
+  --border: #dce6df;
+  --border-strong: #c4d4c9;
+  --selection-bg: #e6f0e9;
+  --selection-text: #232d26;
+}
+
+/* ---------- 梅紫 ---------- */
+[data-theme="plum"] {
+  --bg: #fdfbfc;
+  --bg-soft: #f7f0f6;
+  --bg-code: #f7f0f6;
+  --text: #43384a;
+  --text-strong: #2d2432;
+  --text-soft: #8d7f95;
+  --text-faint: #b8aabf;
+  --link: #6b5573;
+  --link-hover: #2d2432;
+  --accent: #8e4585;
+  --accent-hover: #a85c9e;
+  --border: #eadfea;
+  --border-strong: #d8c8d7;
+  --selection-bg: #f1e6f0;
+  --selection-text: #2d2432;
+}
+
+/* ---------- 深色 ---------- */
+[data-theme="dark"] {
+  --bg: #1a1a1c;
+  --bg-soft: #232327;
+  --bg-code: #232327;
+  --text: #c9c9ce;
+  --text-strong: #ededf0;
+  --text-soft: #8a8a93;
+  --text-faint: #67676f;
+  --link: #a8a8b2;
+  --link-hover: #ffffff;
+  --accent: #e0736a;
+  --accent-hover: #f08e85;
+  --border: #2e2e33;
+  --border-strong: #3d3d44;
+  --selection-bg: #33333a;
+  --selection-text: #ededf0;
+}
+
+[data-theme="dark"] .theme-switcher-toggle,
+[data-theme="dark"] .back-to-top,
+[data-theme="dark"] .theme-switcher-panel {
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.45);
+}
+
+[data-theme="dark"] .post-cover img,
+[data-theme="dark"] .post-content img {
+  opacity: 0.92;
+}
+
+/* ---------- 跟随系统 ---------- */
+[data-theme="auto"] {
+  --bg: #ffffff;
+  --bg-soft: #f8f8f8;
+  --bg-code: #f8f8f8;
+  --text: #444444;
+  --text-strong: #555555;
+  --text-soft: #999999;
+  --text-faint: #bbbbbb;
+  --link: #6e7173;
+  --link-hover: #444444;
+  --accent: #c83c23;
+  --accent-hover: #d26911;
+  --border: #dddddd;
+  --border-strong: #cccccc;
+  --selection-bg: #f6f6f3;
+  --selection-text: #555555;
+}
+
+@media (prefers-color-scheme: dark) {
+  [data-theme="auto"] {
+    --bg: #1a1a1c;
+    --bg-soft: #232327;
+    --bg-code: #232327;
+    --text: #c9c9ce;
+    --text-strong: #ededf0;
+    --text-soft: #8a8a93;
+    --text-faint: #67676f;
+    --link: #a8a8b2;
+    --link-hover: #ffffff;
+    --accent: #e0736a;
+    --accent-hover: #f08e85;
+    --border: #2e2e33;
+    --border-strong: #3d3d44;
+    --selection-bg: #33333a;
+    --selection-text: #ededf0;
+  }
+}
+
+/* 切换配色时轻微过渡，避免生硬 */
+body {
+  transition: background-color 0.18s ease, color 0.18s ease;
+}
