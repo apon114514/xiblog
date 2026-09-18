@@ -10,8 +10,8 @@
 export default {
   /* ---------- 基础信息 ---------- */
   lang: 'zh-CN',
-  title: '见字如面',                       // 站点名（左上角大标题 #logo）
-  description: '抽离自我，冷眼旁观',        // 站点副标题（标题下方小字 .description）
+  title: '你们好呀。',                       // 站点名（左上角大标题 #logo）
+  description: '一个乐乐的博客。',        // 站点副标题（标题下方小字 .description）
 
   // 部署后的正式地址，用于 RSS / sitemap / 分享卡片。
   // 留空则自动使用相对路径，多数情况下也能正常工作。
@@ -21,7 +21,7 @@ export default {
   // 把这里改成 '/myblog'；部署在域名根目录就保持空字符串。
   basePath: '',
 
-  author: '你的名字',
+  author: '熙',
   email: '',
 
   /* ---------- 顶部导航 ---------- */
@@ -53,11 +53,11 @@ export default {
       title: '友链',
       separator: ' / ',
       items: [
-        { name: 'GitHub', url: 'https://github.com' },
-        { name: 'Astro', url: 'https://astro.build' },
-        { name: 'Hugo', url: 'https://gohugo.io' },
-        { name: 'Hexo', url: 'https://hexo.io' },
-        { name: 'Vercel', url: 'https://vercel.com' },
+        { name: '原神', url: 'https://autopatchcn.yuanshen.com/client_app/download/launcher/20260817103614_ioLXDt6rqSXYqxou/pcbackup319/yuanshen_setup_20260817.exe' },
+        { name: '绝区零', url: 'https://autopatchcn.juequling.com/package_download/op/client_app/download/20260818165206_9nBEsfLtMMyHtuYZ/zzz_gw_pc/ZenlessZoneZero_setup_202608032156.exe' },
+        { name: 'Steam', url: 'https://cdn.fastly.steamstatic.com/client/installer/SteamSetup.exe' },
+        
+        
       ],
     },
 
@@ -87,7 +87,7 @@ export default {
     excerptLength: 120,       // 摘要字数（0 = 不截断，显示全文）
     cover: 'auto',            // 封面图：'auto' 自动取正文第一张图 | 'frontmatter' 只认 cover 字段 | 'off' 关闭
     showDate: true,
-    showViews: true,          // 显示"阅读"次数（静态站无法统计真实阅读量，默认显示占位数字）
+    showViews: false,          // 显示"阅读"次数（静态站无法统计真实阅读量，默认显示占位数字）
     showReadingTime: true,
     showTags: true,
     relatedCount: 3,          // 文末"相关文章"数量，0 = 关闭
