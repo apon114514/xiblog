@@ -15,11 +15,11 @@ export default {
 
   // 部署后的正式地址，用于 RSS / sitemap / 分享卡片。
   // 留空则自动使用相对路径，多数情况下也能正常工作。
-  url: 'https://apon114514.github.io',
+  url: 'https://xn--iwx.website',
 
   // 如果部署在子目录（例如 GitHub Pages 项目站点 https://user.github.io/myblog/），
   // 把这里改成 '/myblog'；部署在域名根目录就保持空字符串。
-  basePath: '/xiblog',
+  basePath: '',
 
   author: '你的名字',
   email: '',
