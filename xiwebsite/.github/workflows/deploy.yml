@@ -1,0 +1,67 @@
+# ============================================================
+#  自动构建并部署到 GitHub Pages
+# ------------------------------------------------------------
+#  推送到 main（或 master）分支后自动触发，也可以在仓库的
+#  Actions 页面手动点 "Run workflow"。
+#
+#  首次使用前必须在仓库里设置一次：
+#    Settings → Pages → Build and deployment → Source → GitHub Actions
+#
+#  如果仓库名不是 <用户名>.github.io，站点会挂在子目录下，
+#  此时要修改 blog.config.mjs 里的 basePath（见 README 第五节）。
+# ============================================================
+
+name: Deploy to GitHub Pages
+
+on:
+  push:
+    branches: [main, master]
+  workflow_dispatch:
+
+# GITHUB_TOKEN 需要的权限，缺一不可
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# 同一时间只跑一个部署，新的推送取消排队中的旧任务
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: 检出代码
+        uses: actions/checkout@v7
+
+      - name: 安装 Node
+        uses: actions/setup-node@v7
+        with:
+          node-version: '24'
+
+      # 本模板零依赖，不需要 npm install / npm ci，也就不会有 lockfile 问题
+      - name: 构建站点
+        run: node build.mjs
+
+      - name: 配置 Pages
+        uses: actions/configure-pages@v6
+
+      - name: 上传产物
+        uses: actions/upload-pages-artifact@v5
+        with:
+          path: dist
+          # dist 里有 .nojekyll，显式带上隐藏文件
+          include-hidden-files: true
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: 部署到 GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v5
