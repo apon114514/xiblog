@@ -23,7 +23,7 @@ export default {
   //   'forest'     松绿安静
   //   'plum'       梅紫文艺
   //   'dark'       深色
-  preset: 'maupassant',
+  preset: 'plum',
 
   /* ---------- 2. 变量覆盖 ---------- */
   // 颜色：任何 CSS 颜色值都可以（hex / rgb / hsl / var(...)）
