@@ -105,7 +105,7 @@ export default {
     toc: false,              // 文章页显示目录（文章内 h2~h4 达到 3 个以上时出现）
   },
 
-    /* ---------- 其它 ---------- */
+  /* ---------- 其它 ---------- */
   extras: {
     headHtml:
       '<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@waline/client@v3/dist/waline.css">',
@@ -114,41 +114,54 @@ export default {
 <script type="module">
   var SERVER_URL = 'https://comment.xn--iwx.website';
 
-  /* 文章页才有 .post-single 这个容器，用它判断最可靠 */
-  var host = document.querySelector('.post-single');
+  if (SERVER_URL.indexOf('你的地址') === -1) {
 
-  if (host && SERVER_URL.indexOf('你的地址') === -1) {
-    var sec = document.createElement('section');
-    sec.className = 'post-comments';
-    sec.style.cssText = 'max-width:760px;padding:8px 0 40px;';
-    sec.innerHTML =
-      '<h3 class="widget-title" style="margin-bottom:14px">评论</h3>' +
-      '<div id="waline-mount"></div>';
-    host.appendChild(sec);
+    /* ---- 访问统计埋点 ---- */
+    try {
+      var vbody = JSON.stringify({ path: location.pathname, ref: document.referrer || '' });
+      if (navigator.sendBeacon) {
+        navigator.sendBeacon(SERVER_URL + '/api/visit', vbody);
+      } else {
+        fetch(SERVER_URL + '/api/visit', { method: 'POST', body: vbody, keepalive: true });
+      }
+    } catch (e) {}
 
-    import('https://cdn.jsdelivr.net/npm/@waline/client@v3/dist/waline.js')
-      .then(function (mod) {
-        mod.init({
-          el: '#waline-mount',
-          serverURL: SERVER_URL,
-          lang: 'zh-CN',
-          login: 'disable',
-          requiredMeta: [],
-          meta: ['nick', 'link'],
-          dark: 'auto',
-          pageSize: 20,
-          commentSorting: 'latest'
+    /* ---- 评论区（仅文章页） ---- */
+    var host = document.querySelector('.post-single');
+
+    if (host) {
+      var sec = document.createElement('section');
+      sec.className = 'post-comments';
+      sec.style.cssText = 'max-width:760px;padding:8px 0 40px;';
+      sec.innerHTML =
+        '<h3 class="widget-title" style="margin-bottom:14px">评论</h3>' +
+        '<div id="waline-mount"></div>';
+      host.appendChild(sec);
+
+      import('https://cdn.jsdelivr.net/npm/@waline/client@v3/dist/waline.js')
+        .then(function (mod) {
+          mod.init({
+            el: '#waline-mount',
+            serverURL: SERVER_URL,
+            lang: 'zh-CN',
+            login: 'disable',
+            requiredMeta: [],
+            meta: ['nick', 'link'],
+            dark: 'auto',
+            pageSize: 20,
+            commentSorting: 'latest'
+          });
+        })
+        .catch(function (e) {
+          var box = document.getElementById('waline-mount');
+          if (box) {
+            box.innerHTML =
+              '<p style="color:#c00;font-size:13px">评论组件加载失败：' +
+              (e && e.message ? e.message : e) +
+              '</p>';
+          }
         });
-      })
-      .catch(function (e) {
-        var box = document.getElementById('waline-mount');
-        if (box) {
-          box.innerHTML =
-            '<p style="color:#c00;font-size:13px">评论组件加载失败：' +
-            (e && e.message ? e.message : e) +
-            '<br>（通常是 cdn.jsdelivr.net 被网络拦截）</p>';
-        }
-      });
+    }
   }
 </script>
 `,
