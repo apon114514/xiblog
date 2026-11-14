@@ -105,7 +105,7 @@ export default {
     toc: false,              // 文章页显示目录（文章内 h2~h4 达到 3 个以上时出现）
   },
 
-  /* ---------- 其它 ---------- */
+    /* ---------- 其它 ---------- */
   extras: {
     headHtml:
       '<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@waline/client@v3/dist/waline.css">',
@@ -113,33 +113,21 @@ export default {
     bodyEndHtml: `
 <script type="module">
   var SERVER_URL = 'https://comment.xn--iwx.website';
-  var p = location.pathname;
-  var isPost = p.indexOf('/posts/') !== -1 && p.slice(-5) === '.html';
-  var host = document.querySelector('.post-single') || document.querySelector('#main');
 
-  var box = document.createElement('section');
-  box.style.cssText = 'max-width:760px;margin:20px 0;padding:12px 16px;border:2px dashed #c83c23;border-radius:4px;font-size:13px;line-height:2;color:#444;background:#fffaf8';
-  box.innerHTML =
-    '<strong>评论区诊断（临时，修好后会删掉）</strong><br>' +
-    'pathname = ' + p + '<br>' +
-    'isPost = <b>' + isPost + '</b><br>' +
-    '找到 .post-single = <b>' + (host ? '是（' + host.className + '）' : '否 ✗') + '</b><br>' +
-    'SERVER_URL = ' + SERVER_URL + '<br>' +
-    '<span id="cm-step">准备加载…</span>';
-  (document.getElementById('main') || document.body).appendChild(box);
+  /* 文章页才有 .post-single 这个容器，用它判断最可靠 */
+  var host = document.querySelector('.post-single');
 
-  var step = document.getElementById('cm-step');
-
-  if (isPost && host) {
+  if (host && SERVER_URL.indexOf('你的地址') === -1) {
     var sec = document.createElement('section');
     sec.className = 'post-comments';
     sec.style.cssText = 'max-width:760px;padding:8px 0 40px;';
-    sec.innerHTML = '<h3 class="widget-title" style="margin-bottom:14px">评论</h3><div id="waline-mount"></div>';
+    sec.innerHTML =
+      '<h3 class="widget-title" style="margin-bottom:14px">评论</h3>' +
+      '<div id="waline-mount"></div>';
     host.appendChild(sec);
 
     import('https://cdn.jsdelivr.net/npm/@waline/client@v3/dist/waline.js')
       .then(function (mod) {
-        step.innerHTML = '✅ waline.js 加载成功，正在 init…';
         mod.init({
           el: '#waline-mount',
           serverURL: SERVER_URL,
@@ -151,14 +139,16 @@ export default {
           pageSize: 20,
           commentSorting: 'latest'
         });
-        step.innerHTML = '✅ init 已调用 — 如果评论框仍是空白，请把 Console 的红色报错发我';
       })
-      .catch(function (err) {
-        step.innerHTML = '❌ <b style="color:#c00">waline.js 加载失败：' +
-          (err && err.message ? err.message : String(err)) + '</b>';
+      .catch(function (e) {
+        var box = document.getElementById('waline-mount');
+        if (box) {
+          box.innerHTML =
+            '<p style="color:#c00;font-size:13px">评论组件加载失败：' +
+            (e && e.message ? e.message : e) +
+            '<br>（通常是 cdn.jsdelivr.net 被网络拦截）</p>';
+        }
       });
-  } else {
-    step.innerHTML = '❌ <b style="color:#c00">条件不满足，没有挂载评论区</b>';
   }
 </script>
 `,
