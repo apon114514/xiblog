@@ -1,0 +1,737 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex,nofollow,noarchive">
+<title>后台管理</title>
+<style>
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; background: #f7f7f8; color: #333;
+    font-family: -apple-system, "Segoe UI", "Helvetica Neue", Arial,
+                 "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+    font-size: 14px; line-height: 1.6;
+  }
+  a { color: #c83c23; text-decoration: none; }
+  button { font-family: inherit; cursor: pointer; }
+  input, textarea, select { font-family: inherit; font-size: 14px; }
+
+  /* ---------- 登录页 ---------- */
+  #login { max-width: 420px; margin: 12vh auto; background: #fff; border: 1px solid #e5e5e5;
+           border-radius: 8px; padding: 32px; box-shadow: 0 2px 16px rgba(0,0,0,.05); }
+  #login h1 { font-size: 20px; margin: 0 0 4px; color: #555; }
+  #login .sub { color: #999; font-size: 13px; margin: 0 0 22px; }
+  #login label { display: block; font-size: 13px; color: #666; margin: 14px 0 5px; }
+  #login input { width: 100%; padding: 9px 12px; border: 1px solid #ddd; border-radius: 4px; outline: none; }
+  #login input:focus { border-color: #c83c23; }
+  #login .hint { font-size: 12px; color: #aaa; margin-top: 5px; }
+  #login button { width: 100%; margin-top: 22px; padding: 10px; background: #c83c23; color: #fff;
+                  border: 0; border-radius: 4px; font-size: 15px; }
+  #login button:disabled { background: #ccc; cursor: default; }
+  #loginError { color: #c00; font-size: 13px; margin-top: 12px; display: none; }
+
+  /* ---------- 主界面 ---------- */
+  #app { display: none; }
+  header.top { background: #fff; border-bottom: 1px solid #e5e5e5; padding: 0 24px;
+               display: flex; align-items: center; gap: 24px; height: 56px; position: sticky; top: 0; z-index: 10; }
+  header.top .brand { font-weight: bold; color: #555; font-size: 16px; }
+  nav.tabs { display: flex; gap: 2px; flex: 1; }
+  nav.tabs button { background: none; border: 0; padding: 8px 16px; border-radius: 6px;
+                    color: #666; font-size: 14px; }
+  nav.tabs button:hover { background: #f2f2f2; }
+  nav.tabs button.active { background: #fdece8; color: #c83c23; font-weight: bold; }
+  header.top .right { display: flex; gap: 12px; align-items: center; font-size: 13px; color: #999; }
+
+  main { padding: 24px; max-width: 1200px; margin: 0 auto; }
+  .panel { display: none; }
+  .panel.active { display: block; }
+
+  .card { background: #fff; border: 1px solid #e8e8e8; border-radius: 8px; padding: 20px; margin-bottom: 20px; }
+  .card h2 { font-size: 15px; margin: 0 0 16px; color: #555; font-weight: bold;
+             padding-bottom: 10px; border-bottom: 1px solid #f0f0f0; }
+
+  .stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 14px; }
+  .stat { background: #fff; border: 1px solid #e8e8e8; border-radius: 8px; padding: 18px; }
+  .stat .k { font-size: 12px; color: #999; }
+  .stat .v { font-size: 26px; font-weight: bold; color: #c83c23; margin-top: 4px; }
+
+  table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  th, td { text-align: left; padding: 8px 10px; border-bottom: 1px solid #f0f0f0; vertical-align: top; }
+  th { color: #888; font-weight: normal; background: #fafafa; font-size: 12px; }
+  tr:hover td { background: #fcfcfc; }
+  td.nowrap { white-space: nowrap; }
+  .muted { color: #999; }
+  .mono { font-family: Menlo, Consolas, monospace; font-size: 12px; }
+  .btn-sm { padding: 4px 10px; border: 1px solid #ddd; background: #fff; border-radius: 4px; font-size: 12px; }
+  .btn-sm:hover { border-color: #c83c23; color: #c83c23; }
+  .btn-danger:hover { border-color: #c00; color: #c00; }
+
+  .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 14px; }
+  .form-row.full { grid-template-columns: 1fr; }
+  .field label { display: block; font-size: 12px; color: #888; margin-bottom: 5px; }
+  .field input, .field textarea { width: 100%; padding: 9px 12px; border: 1px solid #ddd;
+                                  border-radius: 4px; outline: none; }
+  .field input:focus, .field textarea:focus { border-color: #c83c23; }
+  .field textarea { resize: vertical; min-height: 340px; line-height: 1.7;
+                    font-family: Menlo, Consolas, "Courier New", monospace; font-size: 13px; }
+  .actions { display: flex; gap: 10px; align-items: center; margin-top: 16px; }
+  .btn-primary { padding: 10px 22px; background: #c83c23; color: #fff; border: 0; border-radius: 4px; font-size: 14px; }
+  .btn-primary:disabled { background: #ccc; cursor: default; }
+  .btn { padding: 9px 16px; background: #fff; border: 1px solid #ddd; border-radius: 4px; }
+
+  #pubMsg { font-size: 13px; margin-left: 4px; }
+  #pubMsg.ok { color: #2a8a4a; }
+  #pubMsg.err { color: #c00; }
+
+  .preview { border: 1px solid #eee; border-radius: 4px; padding: 16px; background: #fcfcfc;
+             max-height: 420px; overflow: auto; display: none; }
+  .preview.on { display: block; }
+  .preview h1, .preview h2, .preview h3 { color: #555; }
+  .preview code { background: #f2f2f2; padding: 1px 5px; border-radius: 3px; }
+  .preview pre { background: #f2f2f2; padding: 10px; border-radius: 4px; overflow: auto; }
+  .preview blockquote { border-left: 3px solid #ddd; margin: 12px 0; padding-left: 14px; color: #777; }
+  .preview img { max-width: 100%; }
+
+  .empty { padding: 30px; text-align: center; color: #aaa; }
+  .filter-bar { display: flex; gap: 10px; align-items: center; margin-bottom: 14px; flex-wrap: wrap; }
+  .filter-bar select, .filter-bar input { padding: 6px 10px; border: 1px solid #ddd; border-radius: 4px; }
+</style>
+</head>
+<body>
+
+<!-- ===================== 登录 ===================== -->
+<div id="login">
+  <h1>博客后台</h1>
+  <p class="sub">管理评论、发布文章、查看访客</p>
+
+  <label for="tkAdmin">管理口令（ADMIN_TOKEN）</label>
+  <input id="tkAdmin" type="password" placeholder="在 Cloudflare Worker 里设置的那个" autocomplete="off">
+
+  <label for="tkGh">GitHub 令牌（可选，发布文章需要）</label>
+  <input id="tkGh" type="password" placeholder="github_pat_..." autocomplete="off">
+  <div class="hint">细粒度令牌，只授权 xiblog 仓库的 Contents 读写；只需评论管理可以不填</div>
+
+  <button id="btnLogin">进入后台</button>
+  <div id="loginError"></div>
+</div>
+
+<!-- ===================== 主界面 ===================== -->
+<div id="app">
+  <header class="top">
+    <span class="brand">博客后台</span>
+    <nav class="tabs">
+      <button data-tab="overview" class="active">概览</button>
+      <button data-tab="comments">评论</button>
+      <button data-tab="write">写文章</button>
+      <button data-tab="visits">访客</button>
+    </nav>
+    <div class="right">
+      <span id="loginAs"></span>
+      <a href="/" target="_blank">查看站点 ↗</a>
+      <button class="btn-sm" id="btnLogout">退出</button>
+    </div>
+  </header>
+
+  <main>
+    <!-- ---------- 概览 ---------- -->
+    <section class="panel active" id="panel-overview">
+      <div class="stats" id="overviewStats">
+        <div class="stat"><div class="k">今日访问（PV）</div><div class="v" id="sTodayPv">–</div></div>
+        <div class="stat"><div class="k">今日独立访客（UV）</div><div class="v" id="sTodayUv">–</div></div>
+        <div class="stat"><div class="k">近 7 天访问</div><div class="v" id="s7Pv">–</div></div>
+        <div class="stat"><div class="k">评论总数</div><div class="v" id="sComments">–</div></div>
+      </div>
+      <div class="card" style="margin-top:20px">
+        <h2>近 7 天访问趋势</h2>
+        <div id="overviewDaily" class="muted">加载中…</div>
+      </div>
+      <div class="card">
+        <h2>热门页面（近 7 天）</h2>
+        <div id="overviewPages" class="muted">加载中…</div>
+      </div>
+    </section>
+
+    <!-- ---------- 评论 ---------- -->
+    <section class="panel" id="panel-comments">
+      <div class="card">
+        <h2>评论管理</h2>
+        <div class="filter-bar">
+          <input id="cmFilter" placeholder="按昵称 / 内容 / 页面筛选…" style="flex:1;min-width:200px">
+          <button class="btn" id="cmReload">刷新</button>
+          <span class="muted" id="cmCount"></span>
+        </div>
+        <div id="cmList" class="muted">加载中…</div>
+      </div>
+    </section>
+
+    <!-- ---------- 写文章 ---------- -->
+    <section class="panel" id="panel-write">
+      <div class="card">
+        <h2>写文章 / 修改文章</h2>
+
+        <div class="form-row">
+          <div class="field">
+            <label>载入已有文章（改旧文章用）</label>
+            <select id="wExisting"><option value="">— 新建文章 —</option></select>
+          </div>
+          <div class="field">
+            <label>文件名（不含 .md，留空自动按标题生成）</label>
+            <input id="wSlug" placeholder="my-new-post">
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="field">
+            <label>标题</label>
+            <input id="wTitle" placeholder="文章标题">
+          </div>
+          <div class="field">
+            <label>日期</label>
+            <input id="wDate" placeholder="2026-09-26 20:00">
+          </div>
+        </div>
+
+        <div class="form-row full">
+          <div class="field">
+            <label>标签（逗号分隔）</label>
+            <input id="wTags" placeholder="随笔, 生活">
+          </div>
+        </div>
+
+        <div class="form-row full">
+          <div class="field">
+            <label>正文（Markdown）</label>
+            <textarea id="wBody" placeholder="正文从这里开始…"></textarea>
+          </div>
+        </div>
+
+        <div class="actions">
+          <button class="btn-primary" id="btnPublish">保存并发布</button>
+          <button class="btn" id="btnPreview">预览</button>
+          <span id="pubMsg"></span>
+        </div>
+
+        <div class="preview" id="wPreview"></div>
+      </div>
+    </section>
+
+    <!-- ---------- 访客 ---------- -->
+    <section class="panel" id="panel-visits">
+      <div class="card">
+        <h2>访客统计</h2>
+        <div class="filter-bar">
+          <label class="muted">时间范围：</label>
+          <select id="vRange">
+            <option value="1">今天</option>
+            <option value="7" selected>近 7 天</option>
+            <option value="30">近 30 天</option>
+            <option value="90">近 90 天</option>
+          </select>
+          <button class="btn" id="vReload">刷新</button>
+          <span class="muted" id="vSummary"></span>
+        </div>
+        <div class="stats" style="margin-bottom:20px">
+          <div class="stat"><div class="k">访问量 PV</div><div class="v" id="vPv">–</div></div>
+          <div class="stat"><div class="k">独立访客 UV</div><div class="v" id="vUv">–</div></div>
+        </div>
+      </div>
+
+      <div class="card">
+        <h2>最近访问明细</h2>
+        <div id="vRecent" class="muted">加载中…</div>
+      </div>
+
+      <div class="card">
+        <h2>访问最多的 IP</h2>
+        <div id="vIps" class="muted">加载中…</div>
+      </div>
+
+      <div class="card">
+        <h2>访问最多的页面</h2>
+        <div id="vPages" class="muted">加载中…</div>
+      </div>
+
+      <div class="card">
+        <h2>地区分布</h2>
+        <div id="vGeo" class="muted">加载中…</div>
+      </div>
+    </section>
+  </main>
+</div>
+
+<script>
+/* ==================================================================
+   配置：改这里
+   ================================================================== */
+var CONFIG = {
+  api: 'https://comment.xn--iwx.website',   // 评论后端地址
+  owner: 'apon114514',                       // GitHub 用户名
+  repo: 'xiblog',                            // 仓库名
+  branch: 'main',
+  postsDir: 'xiwebsite/content/posts'        // 文章目录（相对仓库根）
+};
+
+/* ==================================================================
+   工具
+   ================================================================== */
+var $ = function (s) { return document.querySelector(s); };
+var TK = { admin: '', gh: '' };
+
+function esc(s) {
+  return String(s == null ? '' : s)
+    .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;');
+}
+function fmtTime(ts) {
+  var d = new Date(Number(ts));
+  var p = function (n) { return String(n).padStart(2, '0'); };
+  return d.getFullYear() + '-' + p(d.getMonth() + 1) + '-' + p(d.getDate()) +
+         ' ' + p(d.getHours()) + ':' + p(d.getMinutes());
+}
+function b64Encode(str) {
+  var bytes = new TextEncoder().encode(str);
+  var bin = '';
+  for (var i = 0; i < bytes.length; i++) bin += String.fromCharCode(bytes[i]);
+  return btoa(bin);
+}
+function b64Decode(b64) {
+  var bin = atob(String(b64).replace(/\s/g, ''));
+  var bytes = new Uint8Array(bin.length);
+  for (var i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
+  return new TextDecoder().decode(bytes);
+}
+function apiGet(path) {
+  var sep = path.indexOf('?') === -1 ? '?' : '&';
+  return fetch(CONFIG.api + path + sep + 'token=' + encodeURIComponent(TK.admin))
+    .then(function (r) { return r.json(); });
+}
+function ghHeaders() {
+  return {
+    Authorization: 'Bearer ' + TK.gh,
+    Accept: 'application/vnd.github+json',
+    'Content-Type': 'application/json'
+  };
+}
+function ghPath(file) {
+  return CONFIG.postsDir + '/' + file;
+}
+
+/* ==================================================================
+   登录
+   ================================================================== */
+$('#btnLogin').addEventListener('click', function () {
+  var admin = $('#tkAdmin').value.trim();
+  var gh = $('#tkGh').value.trim();
+  var err = $('#loginError');
+  if (!admin) {
+    err.style.display = 'block';
+    err.textContent = '请填写管理口令';
+    return;
+  }
+  this.disabled = true;
+  this.textContent = '验证中…';
+  var btn = this;
+  fetch(CONFIG.api + '/api/admin/list?count=1&token=' + encodeURIComponent(admin))
+    .then(function (r) { return r.json(); })
+    .then(function (j) {
+      btn.disabled = false;
+      btn.textContent = '进入后台';
+      if (j.errno !== 0) {
+        err.style.display = 'block';
+        err.textContent = '口令不对：' + (j.errmsg || '无权操作');
+        return;
+      }
+      TK.admin = admin;
+      TK.gh = gh;
+      try {
+        sessionStorage.setItem('bg_admin', admin);
+        if (gh) sessionStorage.setItem('bg_gh', gh);
+      } catch (e) {}
+      enterApp();
+    })
+    .catch(function (e) {
+      btn.disabled = false;
+      btn.textContent = '进入后台';
+      err.style.display = 'block';
+      err.textContent = '连不上后端：' + e.message;
+    });
+});
+
+$('#btnLogout').addEventListener('click', function () {
+  try { sessionStorage.removeItem('bg_admin'); sessionStorage.removeItem('bg_gh'); } catch (e) {}
+  location.reload();
+});
+
+function enterApp() {
+  $('#login').style.display = 'none';
+  $('#app').style.display = 'block';
+  $('#loginAs').textContent = TK.gh ? '令牌齐全' : '仅评论管理（未填 GitHub 令牌）';
+  loadOverview();
+  loadComments();
+  loadExistingPosts();
+}
+
+/* 自动恢复会话 */
+(function () {
+  try {
+    var a = sessionStorage.getItem('bg_admin');
+    if (a) {
+      TK.admin = a;
+      TK.gh = sessionStorage.getItem('bg_gh') || '';
+      enterApp();
+    }
+  } catch (e) {}
+})();
+
+/* ==================================================================
+   Tab 切换
+   ================================================================== */
+document.querySelectorAll('nav.tabs button').forEach(function (b) {
+  b.addEventListener('click', function () {
+    document.querySelectorAll('nav.tabs button').forEach(function (x) { x.classList.remove('active'); });
+    document.querySelectorAll('.panel').forEach(function (x) { x.classList.remove('active'); });
+    b.classList.add('active');
+    $('#panel-' + b.dataset.tab).classList.add('active');
+    if (b.dataset.tab === 'visits') loadVisits();
+    if (b.dataset.tab === 'overview') loadOverview();
+  });
+});
+
+/* ==================================================================
+   概览
+   ================================================================== */
+function loadOverview() {
+  apiGet('/api/admin/stats?days=7&limit=1').then(function (j) {
+    if (j.errno !== 0) { return; }
+    var d = j.data;
+    $('#s7Pv').textContent = d.pv;
+    // 今日
+    apiGet('/api/admin/stats?days=1&limit=1').then(function (j2) {
+      if (j2.errno === 0) {
+        $('#sTodayPv').textContent = j2.data.pv;
+        $('#sTodayUv').textContent = j2.data.uv;
+      }
+    });
+    // 趋势
+    var max = 1;
+    d.daily.forEach(function (x) { if (x.pv > max) max = x.pv; });
+    var rows = d.daily.map(function (x) {
+      var dt = new Date(Date.now() - (6 - x.dayIdx) * 86400000);
+      var p = function (n) { return String(n).padStart(2, '0'); };
+      var w = Math.round((x.pv / max) * 100);
+      return '<div style="display:flex;align-items:center;gap:10px;margin:4px 0">' +
+        '<span class="mono muted" style="width:48px">' + p(dt.getMonth() + 1) + '/' + p(dt.getDate()) + '</span>' +
+        '<span style="flex:1;background:#f0f0f0;height:16px;border-radius:3px;overflow:hidden">' +
+        '<span style="display:block;height:100%;width:' + w + '%;background:#c83c23"></span></span>' +
+        '<span class="mono" style="width:44px;text-align:right">' + x.pv + '</span></div>';
+    }).join('');
+    $('#overviewDaily').innerHTML = rows || '<span class="muted">暂无数据</span>';
+
+    $('#overviewPages').innerHTML = d.pages.length
+      ? '<table><thead><tr><th>页面</th><th>PV</th><th>UV</th></tr></thead><tbody>' +
+        d.pages.map(function (p) {
+          return '<tr><td class="mono">' + esc(p.path) + '</td><td>' + p.pv + '</td><td>' + p.uv + '</td></tr>';
+        }).join('') + '</tbody></table>'
+      : '<span class="muted">暂无访问数据（埋点还没生效，或还没人来）</span>';
+  });
+
+  apiGet('/api/admin/list?count=500').then(function (j) {
+    if (j.errno === 0) $('#sComments').textContent = j.data.length;
+  });
+}
+
+/* ==================================================================
+   评论
+   ================================================================== */
+var allComments = [];
+
+function loadComments() {
+  apiGet('/api/admin/list?count=500').then(function (j) {
+    if (j.errno !== 0) {
+      $('#cmList').innerHTML = '<div class="empty">加载失败：' + esc(j.errmsg) + '</div>';
+      return;
+    }
+    allComments = j.data;
+    renderComments();
+  });
+}
+
+function renderComments() {
+  var kw = $('#cmFilter').value.trim().toLowerCase();
+  var list = allComments.filter(function (c) {
+    if (!kw) return true;
+    return (c.nick + ' ' + c.orig + ' ' + c.url).toLowerCase().indexOf(kw) !== -1;
+  });
+  $('#cmCount').textContent = '共 ' + allComments.length + ' 条' + (kw ? '，筛选出 ' + list.length + ' 条' : '');
+
+  if (!list.length) {
+    $('#cmList').innerHTML = '<div class="empty">' + (kw ? '没有匹配的评论' : '还没有评论') + '</div>';
+    return;
+  }
+
+  $('#cmList').innerHTML =
+    '<table><thead><tr><th style="width:110px">昵称</th><th>内容</th>' +
+    '<th style="width:230px">所在页面</th><th style="width:130px">时间</th><th style="width:70px"></th></tr></thead><tbody>' +
+    list.map(function (c) {
+      return '<tr>' +
+        '<td>' + esc(c.nick) + '</td>' +
+        '<td>' + esc(c.orig) + '</td>' +
+        '<td class="mono muted">' + esc(c.url) + '</td>' +
+        '<td class="mono muted nowrap">' + fmtTime(new Date(c.insertedAt).getTime()) + '</td>' +
+        '<td><button class="btn-sm btn-danger" data-del="' + esc(c.objectId) + '">删除</button></td>' +
+        '</tr>';
+    }).join('') + '</tbody></table>';
+
+  document.querySelectorAll('[data-del]').forEach(function (b) {
+    b.addEventListener('click', function () {
+      if (!confirm('确定删除这条评论？（它的回复会一起删掉）')) return;
+      var id = b.getAttribute('data-del');
+      apiGet('/api/admin/delete?id=' + encodeURIComponent(id)).then(function (j) {
+        if (j.errno === 0) loadComments();
+        else alert('删除失败：' + j.errmsg);
+      });
+    });
+  });
+}
+
+$('#cmFilter').addEventListener('input', renderComments);
+$('#cmReload').addEventListener('click', loadComments);
+
+/* ==================================================================
+   写文章
+   ================================================================== */
+function loadExistingPosts() {
+  if (!TK.gh) return;
+  fetch('https://api.github.com/repos/' + CONFIG.owner + '/' + CONFIG.repo +
+        '/contents/' + CONFIG.postsDir + '?ref=' + CONFIG.branch, { headers: ghHeaders() })
+    .then(function (r) { return r.ok ? r.json() : []; })
+    .then(function (arr) {
+      var sel = $('#wExisting');
+      sel.innerHTML = '<option value="">— 新建文章 —</option>' +
+        (Array.isArray(arr) ? arr : [])
+          .filter(function (f) { return /\.md$/i.test(f.name); })
+          .map(function (f) { return '<option value="' + esc(f.name) + '">' + esc(f.name.replace(/\.md$/i, '')) + '</option>'; })
+          .join('');
+    })
+    .catch(function () {});
+}
+
+$('#wExisting').addEventListener('change', function () {
+  var name = this.value;
+  if (!name) {
+    $('#wTitle').value = ''; $('#wSlug').value = ''; $('#wTags').value = '';
+    $('#wBody').value = ''; return;
+  }
+  fetch('https://api.github.com/repos/' + CONFIG.owner + '/' + CONFIG.repo +
+        '/contents/' + ghPath(name) + '?ref=' + CONFIG.branch, { headers: ghHeaders() })
+    .then(function (r) { if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); })
+    .then(function (j) {
+      var text = b64Decode(j.content);
+      var m = text.match(/^\s*---\r?\n([\s\S]*?)\r?\n---\s*\r?\n?/);
+      var fm = {};
+      if (m) {
+        m[1].split(/\r?\n/).forEach(function (line) {
+          var kv = line.match(/^([A-Za-z0-9_\-]+)\s*:\s*(.*)$/);
+          if (kv) fm[kv[1]] = kv[2].trim();
+        });
+      }
+      $('#wTitle').value = (fm.title || '').replace(/^["']|["']$/g, '');
+      $('#wDate').value = (fm.date || '').replace(/^["']|["']$/g, '');
+      $('#wTags').value = (fm.tags || '').replace(/[\[\]"]/g, '');
+      $('#wSlug').value = name.replace(/\.md$/i, '');
+      $('#wBody').value = m ? text.slice(m[0].length) : text;
+    })
+    .catch(function (e) { alert('读取失败：' + e.message); });
+});
+
+function nowStr() {
+  var d = new Date(), p = function (n) { return String(n).padStart(2, '0'); };
+  return d.getFullYear() + '-' + p(d.getMonth() + 1) + '-' + p(d.getDate()) +
+         ' ' + p(d.getHours()) + ':' + p(d.getMinutes());
+}
+$('#wDate').value = nowStr();
+
+function setMsg(kind, text) {
+  var el = $('#pubMsg');
+  el.className = kind || '';
+  el.textContent = text || '';
+}
+
+$('#btnPublish').addEventListener('click', function () {
+  if (!TK.gh) {
+    setMsg('err', '需要先填 GitHub 令牌（退出后重新登录时填上）');
+    return;
+  }
+  var title = $('#wTitle').value.trim();
+  var body = $('#wBody').value;
+  if (!title) { setMsg('err', '标题不能为空'); return; }
+  if (!body.trim()) { setMsg('err', '正文不能为空'); return; }
+
+  var slug = $('#wSlug').value.trim() || slugify(title);
+  var fileName = slug + '.md';
+  var tags = $('#wTags').value.split(/[,，]/).map(function (s) { return s.trim(); }).filter(Boolean);
+
+  var md =
+    '---\n' +
+    'title: ' + title + '\n' +
+    'date: ' + ($('#wDate').value.trim() || nowStr()) + '\n' +
+    (tags.length ? 'tags: [' + tags.join(', ') + ']\n' : '') +
+    '---\n\n' +
+    body.replace(/\r\n/g, '\n') + '\n';
+
+  var btn = this;
+  btn.disabled = true;
+  setMsg('', '正在提交…');
+
+  // 先查文件是否已存在，存在就要带上 sha 才能覆盖
+  fetch('https://api.github.com/repos/' + CONFIG.owner + '/' + CONFIG.repo +
+        '/contents/' + ghPath(fileName) + '?ref=' + CONFIG.branch, { headers: ghHeaders() })
+    .then(function (r) { return r.ok ? r.json() : null; })
+    .then(function (existing) {
+      var payload = {
+        message: (existing ? '更新文章: ' : '发布文章: ') + title,
+        content: b64Encode(md),
+        branch: CONFIG.branch
+      };
+      if (existing && existing.sha) payload.sha = existing.sha;
+
+      return fetch('https://api.github.com/repos/' + CONFIG.owner + '/' + CONFIG.repo +
+                   '/contents/' + ghPath(fileName), {
+        method: 'PUT',
+        headers: ghHeaders(),
+        body: JSON.stringify(payload)
+      });
+    })
+    .then(function (r) {
+      return r.json().then(function (j) {
+        if (!r.ok) throw new Error(j.message || ('HTTP ' + r.status));
+        return j;
+      });
+    })
+    .then(function (j) {
+      btn.disabled = false;
+      setMsg('ok', '✅ 已提交，Cloudflare 约 1 分钟后自动上线');
+      $('#wSlug').value = slug;
+      loadExistingPosts();
+    })
+    .catch(function (e) {
+      btn.disabled = false;
+      setMsg('err', '❌ 失败：' + e.message);
+    });
+});
+
+function slugify(text) {
+  var s = String(text).trim().toLowerCase()
+    .replace(/\s+/g, '-')
+    .replace(/[^\w\u4e00-\u9fa5\-]/g, '')
+    .replace(/-{2,}/g, '-')
+    .replace(/^-+|-+$/g, '');
+  return s || ('post-' + Date.now());
+}
+
+/* 简易 Markdown 预览（自己写的，不加载任何第三方脚本） */
+$('#btnPreview').addEventListener('click', function () {
+  var pv = $('#wPreview');
+  if (pv.classList.contains('on')) {
+    pv.classList.remove('on');
+    this.textContent = '预览';
+    return;
+  }
+  pv.innerHTML = mdPreview($('#wBody').value);
+  pv.classList.add('on');
+  this.textContent = '关闭预览';
+});
+
+function mdPreview(md) {
+  var out = esc(md);
+  // 代码块
+  var blocks = [];
+  out = out.replace(/```([\s\S]*?)```/g, function (_, code) {
+    blocks.push('<pre><code>' + code.replace(/^\n/, '') + '</code></pre>');
+    return '\u0000B' + (blocks.length - 1) + '\u0000';
+  });
+  out = out
+    .replace(/^###### (.*)$/gm, '<h6>$1</h6>')
+    .replace(/^##### (.*)$/gm, '<h5>$1</h5>')
+    .replace(/^#### (.*)$/gm, '<h4>$1</h4>')
+    .replace(/^### (.*)$/gm, '<h3>$1</h3>')
+    .replace(/^## (.*)$/gm, '<h2>$1</h2>')
+    .replace(/^# (.*)$/gm, '<h1>$1</h1>')
+    .replace(/^&gt; (.*)$/gm, '<blockquote>$1</blockquote>')
+    .replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>')
+    .replace(/\*([^*\n]+)\*/g, '<em>$1</em>')
+    .replace(/`([^`]+)`/g, '<code>$1</code>')
+    .replace(/!\[([^\]]*)\]\(([^)]+)\)/g, '<img src="$2" alt="$1">')
+    .replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" target="_blank" rel="noopener">$1</a>')
+    .replace(/^---+$/gm, '<hr>')
+    .replace(/^\s*[-*+] (.*)$/gm, '<li>$1</li>')
+    .replace(/^\s*(\d+)\. (.*)$/gm, '<li>$2</li>');
+
+  out = out.split(/\n{2,}/).map(function (chunk) {
+    if (/^\s*<(h\d|ul|ol|li|pre|blockquote|hr|img)/.test(chunk.trim())) return chunk;
+    if (!chunk.trim()) return '';
+    return '<p>' + chunk.replace(/\n/g, '<br>') + '</p>';
+  }).join('\n');
+
+  out = out.replace(/\u0000B(\d+)\u0000/g, function (_, i) { return blocks[Number(i)]; });
+  return out || '<span class="muted">（空）</span>';
+}
+
+/* ==================================================================
+   访客
+   ================================================================== */
+function loadVisits() {
+  var days = $('#vRange').value;
+  apiGet('/api/admin/visits?days=' + days + '&limit=200').then(function (j) {
+    if (j.errno !== 0) {
+      $('#vRecent').innerHTML = '<div class="empty">加载失败：' + esc(j.errmsg) + '</div>';
+      return;
+    }
+    var d = j.data;
+    $('#vPv').textContent = d.pv;
+    $('#vUv').textContent = d.uv;
+    $('#vSummary').textContent = '近 ' + d.days + ' 天';
+
+    $('#vRecent').innerHTML = d.recent.length
+      ? '<table><thead><tr><th style="width:130px">时间</th><th>页面</th><th style="width:120px">IP</th>' +
+        '<th style="width:140px">地区</th><th style="width:110px">运营商</th><th style="width:70px">来源</th></tr></thead><tbody>' +
+        d.recent.map(function (v) {
+          return '<tr>' +
+            '<td class="mono muted nowrap">' + fmtTime(v.ts) + '</td>' +
+            '<td class="mono">' + esc(decodeURI(v.path)) + '</td>' +
+            '<td class="mono">' + esc(v.ip) + '</td>' +
+            '<td>' + esc([v.country, v.region, v.city].filter(Boolean).join(' / ') || '—') + '</td>' +
+            '<td class="muted">' + esc(v.org || '—') + '</td>' +
+            '<td>' + (v.referer ? '<a href="' + esc(v.referer) + '" target="_blank" rel="noopener">链接</a>' : '<span class="muted">—</span>') + '</td>' +
+            '</tr>';
+        }).join('') + '</tbody></table>'
+      : '<div class="empty">这段时间还没有访问记录</div>';
+
+    $('#vIps').innerHTML = d.ips.length
+      ? '<table><thead><tr><th>IP</th><th>地区</th><th style="width:80px">访问次数</th><th style="width:140px">最后访问</th></tr></thead><tbody>' +
+        d.ips.map(function (x) {
+          return '<tr><td class="mono">' + esc(x.ip) + '</td><td>' +
+            esc([x.country, x.city].filter(Boolean).join(' / ') || '—') + '</td><td>' + x.pv +
+            '</td><td class="mono muted nowrap">' + fmtTime(x.lastTs) + '</td></tr>';
+        }).join('') + '</tbody></table>'
+      : '<div class="empty">暂无数据</div>';
+
+    $('#vPages').innerHTML = d.pages.length
+      ? '<table><thead><tr><th>页面</th><th style="width:80px">PV</th><th style="width:80px">UV</th></tr></thead><tbody>' +
+        d.pages.map(function (p) {
+          return '<tr><td class="mono">' + esc(decodeURI(p.path)) + '</td><td>' + p.pv + '</td><td>' + p.uv + '</td></tr>';
+        }).join('') + '</tbody></table>'
+      : '<div class="empty">暂无数据</div>';
+
+    var geo = d.countries.map(function (c) { return '<li>' + esc(c.country) + '（' + c.pv + '）</li>'; });
+    geo = geo.concat(d.cities.map(function (c) { return '<li>' + esc(c.city) + ' · ' + esc(c.country) + '（' + c.pv + '）</li>'; }));
+    $('#vGeo').innerHTML = geo.length ? '<ul style="columns:2;margin:0">' + geo.join('') + '</ul>' : '<div class="empty">暂无数据</div>';
+  });
+}
+
+$('#vRange').addEventListener('change', loadVisits);
+$('#vReload').addEventListener('click', loadVisits);
+</script>
+</body>
+</html>
