@@ -107,49 +107,61 @@ export default {
 
   /* ---------- 其它 ---------- */
   extras: {
-    /* ===== 匿名评论区 ===== */
     headHtml:
       '<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@waline/client@v3/dist/waline.css">',
 
     bodyEndHtml: `
 <script type="module">
   var SERVER_URL = 'https://comment.xn--iwx.website';
-
   var p = location.pathname;
   var isPost = p.indexOf('/posts/') !== -1 && p.slice(-5) === '.html';
+  var host = document.querySelector('.post-single') || document.querySelector('#main');
 
-  if (isPost && SERVER_URL.indexOf('.workers.dev') === -1) {
-    var host = document.querySelector('.post-single') || document.querySelector('#main');
+  var box = document.createElement('section');
+  box.style.cssText = 'max-width:760px;margin:20px 0;padding:12px 16px;border:2px dashed #c83c23;border-radius:4px;font-size:13px;line-height:2;color:#444;background:#fffaf8';
+  box.innerHTML =
+    '<strong>评论区诊断（临时，修好后会删掉）</strong><br>' +
+    'pathname = ' + p + '<br>' +
+    'isPost = <b>' + isPost + '</b><br>' +
+    '找到 .post-single = <b>' + (host ? '是（' + host.className + '）' : '否 ✗') + '</b><br>' +
+    'SERVER_URL = ' + SERVER_URL + '<br>' +
+    '<span id="cm-step">准备加载…</span>';
+  (document.getElementById('main') || document.body).appendChild(box);
 
-    if (host) {
-      var sec = document.createElement('section');
-      sec.className = 'post-comments';
-      sec.style.cssText = 'max-width:760px;padding:8px 0 40px;';
-      sec.innerHTML =
-        '<h3 class="widget-title" style="margin-bottom:14px">评论</h3>' +
-        '<div id="waline-mount"></div>';
-      host.appendChild(sec);
+  var step = document.getElementById('cm-step');
 
-      import('https://cdn.jsdelivr.net/npm/@waline/client@v3/dist/waline.js')
-        .then(function (mod) {
-          mod.init({
-            el: '#waline-mount',
-            serverURL: SERVER_URL,
-            lang: 'zh-CN',
-            login: 'disable',
-            requiredMeta: [],
-            meta: ['nick', 'link'],
-            dark: 'auto',
-            pageSize: 20,
-            commentSorting: 'latest'
-          });
-        })
-        .catch(function () {});
-    }
+  if (isPost && host) {
+    var sec = document.createElement('section');
+    sec.className = 'post-comments';
+    sec.style.cssText = 'max-width:760px;padding:8px 0 40px;';
+    sec.innerHTML = '<h3 class="widget-title" style="margin-bottom:14px">评论</h3><div id="waline-mount"></div>';
+    host.appendChild(sec);
+
+    import('https://cdn.jsdelivr.net/npm/@waline/client@v3/dist/waline.js')
+      .then(function (mod) {
+        step.innerHTML = '✅ waline.js 加载成功，正在 init…';
+        mod.init({
+          el: '#waline-mount',
+          serverURL: SERVER_URL,
+          lang: 'zh-CN',
+          login: 'disable',
+          requiredMeta: [],
+          meta: ['nick', 'link'],
+          dark: 'auto',
+          pageSize: 20,
+          commentSorting: 'latest'
+        });
+        step.innerHTML = '✅ init 已调用 — 如果评论框仍是空白，请把 Console 的红色报错发我';
+      })
+      .catch(function (err) {
+        step.innerHTML = '❌ <b style="color:#c00">waline.js 加载失败：' +
+          (err && err.message ? err.message : String(err)) + '</b>';
+      });
+  } else {
+    step.innerHTML = '❌ <b style="color:#c00">条件不满足，没有挂载评论区</b>';
   }
 </script>
 `,
-
     postTopHtml: '',
   },
 };
